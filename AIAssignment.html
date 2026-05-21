@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>AI Assignment</title>
+	<meta name="description" content="">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Caprasimo" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+	<style>
+		.navbar-custom {
+			background: rgba(0,0,0,0.45);
+			-webkit-backdrop-filter: blur(8px) saturate(1.1);
+			backdrop-filter: blur(8px) saturate(1.1);
+			box-shadow: 0 12px 30px rgba(0,0,0,0.55), inset 0 -2px 6px rgba(255,255,255,0.03);
+			border-bottom: 1px solid rgba(255,255,255,0.04);
+			transform: translateZ(0);
+		}
+		.navbar-custom .navbar-brand,
+		.navbar-custom .nav-link { color: #fff; }
+		.navbar-custom .nav-link.active { color: #fff; }
+		.navbar-custom .navbar-toggler { border-color: rgba(255,255,255,0.2); }
+		.navbar-custom .navbar-toggler-icon { filter: invert(1); }
+
+		.footer-rainbow {
+			background: rgba(0,0,0,0.45);
+			-webkit-backdrop-filter: blur(10px) saturate(1.1);
+			backdrop-filter: blur(10px) saturate(1.1);
+			box-shadow: 0 -12px 30px rgba(0,0,0,0.55);
+			border-top: 1px solid rgba(255,255,255,0.04);
+		}
+
+		.profile-avatar { width: 320px; height: 320px; border-radius: 50%; object-fit: cover; border: 6px solid #c2185b; position: relative; z-index: 1; }
+		#profile-name { display: block; margin-top: 12px; font-size: 1.25rem; }
+		.avatar-wrap { display: inline-block; position: relative; }
+		.avatar-wrap::before { content: ""; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: calc(100% + 48px); height: calc(100% + 48px); border-radius: 50%; background: radial-gradient(circle, rgba(194,24,91,0.26), rgba(194,24,91,0)); filter: blur(18px); z-index: 0; animation: glowPulse 3.6s ease-in-out infinite; }
+		.avatar-wrap > img { position: relative; z-index: 1; }
+		@keyframes glowPulse { 0% { transform: translate(-50%, -50%) scale(1); opacity: 0.9 } 50% { transform: translate(-50%, -50%) scale(1.04); opacity: 1 } 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.9 } }
+
+		/* Make all page text white for readability on rainbow background */
+		html, body { height: 100%; }
+		body { font-family: 'Caprasimo', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; color: #ffffff; display: flex; flex-direction: column; min-height: 100vh; cursor: none; }
+		main#app { flex: 1 0 auto; }
+		footer { flex-shrink: 0; }
+		a, a:visited { color: #ffffff; }
+		a:hover, a:focus { color: #ffffff; text-decoration: underline; }
+		.text-muted { color: rgba(255,255,255,0.9) !important; }
+
+		/* Animated rainbow background for the whole page */
+		/* Lava-lamp style animated blobs for a chill vibe */
+		body.rainbow-full { background: #0e0e10; }
+		.lava-container { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+		.blob {
+			position: absolute;
+			border-radius: 50%;
+			filter: blur(140px);
+			opacity: 0.85;
+			mix-blend-mode: screen;
+			pointer-events: none;
+			will-change: transform;
+		}
+
+		/* brighter, glowy pink/green blobs with stronger lava-lamp glow */
+		.blob.b1 { width: 44vmax; height: 44vmax; left: -12vmin; top: -18vmin; background: radial-gradient(circle at 30% 30%, rgba(255,77,180,0.94) 0%, rgba(255,36,140,0.88) 40%, rgba(255,36,140,0) 72%); box-shadow: 0 0 160px rgba(255,36,140,0.36); animation: float1 14s ease-in-out infinite; }
+		.blob.b2 { width: 40vmax; height: 40vmax; right: -10vmin; top: 6vmin; background: radial-gradient(circle at 60% 60%, rgba(102,255,190,0.94) 0%, rgba(34,204,120,0.86) 45%, rgba(34,204,120,0) 72%); box-shadow: 0 0 160px rgba(34,204,120,0.32); animation: float2 16s ease-in-out infinite; }
+		.blob.b3 { width: 46vmax; height: 46vmax; left: 10vmin; bottom: -18vmin; background: radial-gradient(circle at 40% 60%, rgba(255,65,150,0.94) 0%, rgba(255,30,120,0.86) 35%, rgba(255,30,120,0) 74%); box-shadow: 0 0 180px rgba(255,30,120,0.38); animation: float3 18s ease-in-out infinite; }
+		.blob.b4 { width: 36vmax; height: 36vmax; left: 20vmin; top: -8vmin; background: radial-gradient(circle at 40% 40%, rgba(80,255,170,0.92) 0%, rgba(30,200,120,0.8) 45%, rgba(30,200,120,0) 76%); box-shadow: 0 0 140px rgba(30,200,120,0.28); animation: float4 12s ease-in-out infinite; }
+		.blob.b5 { width: 42vmax; height: 42vmax; right: 8vmin; bottom: -10vmin; background: radial-gradient(circle at 50% 50%, rgba(255,95,185,0.94) 0%, rgba(200,50,140,0.86) 40%, rgba(200,50,140,0) 74%); box-shadow: 0 0 200px rgba(200,50,140,0.36); animation: float5 20s ease-in-out infinite; }
+		.blob.b6 { width: 56vmax; height: 40vmax; left: 50%; transform: translateX(-50%); bottom: -32vmin; background: radial-gradient(circle at 50% 60%, rgba(40,200,120,0.96) 0%, rgba(30,160,95,0.9) 45%, rgba(30,160,95,0) 78%); box-shadow: 0 0 260px rgba(30,160,95,0.44); animation: float6 20s ease-in-out infinite; opacity: 0.9; filter: blur(160px); }
+
+		@keyframes float1 {
+			0% { transform: translate(0,0) scale(1); }
+			25% { transform: translate(3vw, 8vw) scale(1.04); }
+			50% { transform: translate(0,18vw) scale(1.07); }
+			75% { transform: translate(-3vw, 8vw) scale(1.03); }
+			100% { transform: translate(0,0) scale(1); }
+		}
+		@keyframes float2 {
+			0% { transform: translate(0,0) scale(1); }
+			25% { transform: translate(-3vw, 6vw) scale(1.03); }
+			50% { transform: translate(0,16vw) scale(1.05); }
+			75% { transform: translate(3vw, 6vw) scale(1.02); }
+			100% { transform: translate(0,0) scale(1); }
+		}
+		@keyframes float3 {
+			0% { transform: translate(0,0) scale(1); }
+			25% { transform: translate(3vw, 10vw) scale(1.04); }
+			50% { transform: translate(0,-20vw) scale(1.07); }
+			75% { transform: translate(-3vw, 10vw) scale(1.03); }
+			100% { transform: translate(0,0) scale(1); }
+		}
+		@keyframes float4 {
+			0% { transform: translate(0,0) scale(1); }
+			25% { transform: translate(2vw, -8vw) scale(1.03); }
+			50% { transform: translate(0,14vw) scale(1.05); }
+			75% { transform: translate(-2vw, -6vw) scale(1.02); }
+			100% { transform: translate(0,0) scale(1); }
+		}
+		@keyframes float5 {
+			0% { transform: translate(0,0) scale(1); }
+			25% { transform: translate(-3vw, 6vw) scale(1.03); }
+			50% { transform: translate(0,-12vw) scale(1.05); }
+			75% { transform: translate(3vw, 6vw) scale(1.02); }
+			100% { transform: translate(0,0) scale(1); }
+		}
+		@keyframes float6 {
+			0% { transform: translate(0,0) scale(1); }
+			25% { transform: translate(0,8vw) scale(1.03); }
+			50% { transform: translate(0,-28vw) scale(1.08); }
+			75% { transform: translate(0,8vw) scale(1.03); }
+			100% { transform: translate(0,0) scale(1); }
+		}
+		@keyframes float4 {
+			0% { transform: translate(0,0) scale(1); }
+			25% { transform: translate(5vw, -5vw) scale(1.02); }
+			50% { transform: translate(-6vw, 6vw) scale(1.03); }
+			75% { transform: translate(3vw, -3vw) scale(1.01); }
+			100% { transform: translate(0,0) scale(1); }
+		}
+		@keyframes float5 {
+			0% { transform: translate(0,0) scale(1); }
+			25% { transform: translate(-4vw, 4vw) scale(1.02); }
+			50% { transform: translate(6vw, -5vw) scale(1.03); }
+			75% { transform: translate(-5vw, 3vw) scale(1.01); }
+			100% { transform: translate(0,0) scale(1); }
+		}
+
+		/* Responsive tweaks and cursor glow */
+		@media (max-width: 992px) {
+		  .profile-avatar { width: 220px; height: 220px; }
+		  .avatar-wrap::before { width: calc(100% + 28px); height: calc(100% + 28px); filter: blur(14px); }
+		  .lava-container .blob { filter: blur(110px); opacity: 0.75; }
+		  .blob.b6 { display: none; }
+		}
+		@media (max-width: 576px) {
+		  .profile-avatar { width: 140px; height: 140px; }
+		  .avatar-wrap::before { width: calc(100% + 18px); height: calc(100% + 18px); filter: blur(10px); }
+		  .lava-container .blob { filter: blur(80px); opacity: 0.6; }
+		  .blob.b3, .blob.b5 { display: none; }
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+		  .lava-container .blob { animation: none !important; transition: none !important; opacity: 0.55 !important; }
+		}
+
+		/* Cursor-following white glow — smaller with a bright core (cursor is the light) */
+		.cursor-glow {
+		  position: fixed;
+		  left: 0; top: 0;
+		  width: 120px; height: 120px; border-radius: 50%;
+		  pointer-events: none;
+		  transform: translate(-50%,-50%) scale(1);
+		  background: radial-gradient(circle at 50% 40%, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.55) 10%, rgba(255,255,255,0.18) 22%, rgba(255,255,255,0) 50%);
+		  mix-blend-mode: screen; opacity: 0; transition: opacity 120ms linear;
+		  will-change: transform, opacity; z-index: 9999; pointer-events: none;
+		}
+		.cursor-glow::after {
+		  content: '';
+		  position: absolute;
+		  left: 50%; top: 50%; transform: translate(-50%, -50%);
+		  width: 14px; height: 14px; border-radius: 50%; background: #ffffff;
+		  box-shadow: 0 0 18px rgba(255,255,255,0.98), 0 0 56px rgba(255,255,255,0.28);
+		}
+
+		/* Ensure content sits above the blobs */
+		nav, main, footer { position: relative; z-index: 1; }
+
+		/* Force all visible text to solid white and remove neon/glow text effects */
+		body, body * { color: #ffffff !important; text-shadow: none !important; }
+
+		/* Home welcome neon/pink styling and abstract shapes */
+		@font-face {
+			font-family: 'Retro Mother';
+			src: url('fonts/RetroMother.woff2') format('woff2'),
+			     url('fonts/RetroMother.ttf') format('truetype');
+			font-weight: 400 800;
+			font-style: normal;
+			font-display: swap;
+		}
+
+		.home-welcome { text-align: center; color: #ff6fb3; }
+		.home-welcome h1 { font-family: 'Caprasimo', 'Spicy Rice', 'Retro Mother', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: clamp(2.2rem, 6vw, 4.4rem); font-weight: 800; margin-bottom: .25rem; color: #c2185b; letter-spacing: .02em; text-shadow: none; }
+		.home-welcome .lead { font-size: 1.125rem; font-weight: 600; color: rgba(255,210,235,0.9); text-shadow: none; margin-top: 1.25rem; }
+		.neon-link { display: inline-block; margin: 0 .4rem; padding: .45rem 1rem; border-radius: .45rem; color: #fff; background: linear-gradient(180deg, rgba(255,110,180,0.08), rgba(255,50,140,0.04)); border: 1px solid rgba(255,110,170,0.12); text-decoration: none; font-weight: 700; box-shadow: 0 6px 12px rgba(0,0,0,0.25), inset 0 -2px 6px rgba(255,255,255,0.02); text-shadow: none; transition: transform .15s ease, box-shadow .15s ease; }
+		.neon-link:hover { transform: translateY(-3px); box-shadow: 0 12px 22px rgba(0,0,0,0.28); }
+
+		/* Align link columns so buttons sit on same baseline while icons stay above */
+		.home-links-row { display: flex; justify-content: center; gap: 1rem; align-items: flex-end; }
+
+		.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48; display: inline-block; vertical-align: middle; }
+		.material-symbols-outlined.md-48 { font-size: 48px; line-height: 1; display: block; margin-bottom: 6px; }
+		.material-symbols-outlined.md-40 { font-size: 40px; line-height: 1; display: block; margin-bottom: 6px; }
+
+
+	</style>
+</head>
+<body class="rainbow-full">
+	<div class="lava-container" aria-hidden="true">
+		<div class="blob b1"></div>
+		<div class="blob b2"></div>
+		<div class="blob b3"></div>
+		<div class="blob b4"></div>
+		<div class="blob b5"></div>
+		<div class="blob b6"></div>
+	</div>
+	<nav class="navbar navbar-expand-lg navbar-custom">
+		<div class="container">
+			<a class="navbar-brand" href="#">AI Assignment</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarNav">
+					<ul class="navbar-nav ms-auto">
+						<li class="nav-item"><a class="nav-link active" aria-current="page" href="#" data-target="home">Home</a></li>
+						<li class="nav-item"><a class="nav-link" href="#" data-target="about">About Me</a></li>
+						<li class="nav-item"><a class="nav-link" href="#" data-target="project">My Project</a></li>
+					</ul>
+			</div>
+		</div>
+	</nav>
+
+	<main id="app" class="container py-4">
+		<!-- Add your assignment content here -->
+		<section id="home" class="section">
+			<div class="home-welcome">
+				<h1>Welcome to my AI Assignment</h1>
+				<p class="lead">Welcome — explore my AI assignment below.</p>
+				<div class="mt-3 home-links-row">
+					<div class="d-flex flex-column align-items-center">
+						<a href="#" class="nav-link icon-link" data-target="about" role="button" aria-label="About Me">
+							<span class="material-symbols-outlined md-48">person_pin</span>
+						</a>
+						<span class="about-label">About Me</span>
+					</div>
+						<div class="d-flex flex-column align-items-center">
+							<span class="material-symbols-outlined md-40">article_shortcut</span>
+							<a href="#project" class="neon-link">My Project</a>
+						</div>
+				</div>
+			</div>
+		</section>
+		<section id="about" class="section d-none mt-4 text-center about-rainbow">
+			<h2>About Me</h2>
+			<div id="profile" class="d-flex flex-column align-items-center text-center">
+				<!-- Avatar and bio will be loaded here -->
+				<div class="spinner-border text-pink" role="status" id="profile-loading" aria-hidden="true"></div>
+				<div id="profile-content" class="d-none">
+					<img id="profile-avatar" src="" alt="Profile avatar" class="profile-avatar mb-2">
+					<strong id="profile-name"></strong>
+					<p id="profile-bio" class="mb-0 text-muted"></p>
+					<a id="profile-link" href="#" target="_blank" class="mt-2">View on GitHub</a>
+				</div>
+			</div>
+		</section>
+		<section id="project" class="section d-none mt-4">
+			<h2>My Project</h2>
+			<p>Describe your project here.</p>
+		</section>
+	</main>
+
+	<footer class="footer-rainbow text-white mt-5 py-3">
+		<div class="container text-center">
+			&copy; 2026 Aleasha Clark
+		</div>
+	</footer>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5/dist/js/bootstrap.bundle.min.js"></script>
+	<script>
+		async function loadGitHubProfile(profileUrl) {
+			const match = profileUrl.match(/github\.com\/([^\/\s]+)/i);
+			if (!match) return;
+			const username = match[1];
+			try {
+				const res = await fetch(`https://api.github.com/users/${username}`);
+				if (!res.ok) throw new Error(res.statusText);
+				const data = await res.json();
+				const loading = document.getElementById('profile-loading');
+				const content = document.getElementById('profile-content');
+				if (loading) loading.classList.add('d-none');
+				if (content) content.classList.remove('d-none');
+				const avatar = document.getElementById('profile-avatar');
+				const nameEl = document.getElementById('profile-name');
+				const bioEl = document.getElementById('profile-bio');
+				const linkEl = document.getElementById('profile-link');
+				if (avatar) avatar.src = data.avatar_url;
+				if (nameEl) nameEl.textContent = data.name || data.login;
+				if (bioEl) bioEl.textContent = data.bio || '';
+				if (linkEl) { linkEl.href = data.html_url; linkEl.textContent = 'View on GitHub'; }
+			} catch (err) {
+				console.error('Failed to load GitHub profile', err);
+			}
+		}
+
+		function showSection(id) {
+			document.querySelectorAll('main .section').forEach(s => s.classList.add('d-none'));
+			const el = document.getElementById(id);
+			if (el) el.classList.remove('d-none');
+			// update active link
+			document.querySelectorAll('.nav-link[data-target]').forEach(link => {
+				if (link.getAttribute('data-target') === id) {
+					link.classList.add('active');
+					link.setAttribute('aria-current','page');
+				} else {
+					link.classList.remove('active');
+					link.removeAttribute('aria-current');
+				}
+			});
+		}
+
+		document.addEventListener('DOMContentLoaded', () => {
+			// attach handlers
+			document.querySelectorAll('.nav-link[data-target]').forEach(link => {
+				link.addEventListener('click', e => {
+					e.preventDefault();
+					const target = link.getAttribute('data-target');
+					showSection(target);
+					// collapse navbar on small screens
+					const bsCollapse = document.querySelector('.navbar-collapse');
+					if (bsCollapse && bsCollapse.classList.contains('show')) {
+						new bootstrap.Collapse(bsCollapse).hide();
+					}
+				});
+			});
+			// show home by default
+			showSection('home');
+			// load user's GitHub profile into About section
+			loadGitHubProfile('https://github.com/Aleashaclaudettepena');
+		});
+	</script>
+	<script>
+	(function(){
+	  // disable on touch devices and respect reduced-motion
+	  if ('ontouchstart' in window) return;
+	  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+	  const glow = document.createElement('div');
+	  glow.className = 'cursor-glow';
+	  document.body.appendChild(glow);
+
+	  let mouseX = 0, mouseY = 0;
+	  let x = 0, y = 0;
+	  let visible = false;
+
+	  const lerp = (a,b,t) => a + (b - a) * t;
+
+	  let idleTimer;
+	  window.addEventListener('mousemove', (e) => {
+	    mouseX = e.clientX;
+	    mouseY = e.clientY;
+	    visible = true;
+	    glow.style.opacity = '1';
+	    clearTimeout(idleTimer);
+	    idleTimer = setTimeout(() => { visible = false; glow.style.opacity = '0'; }, 2200);
+	  });
+
+	  window.addEventListener('mouseleave', () => { visible = false; glow.style.opacity = '0'; });
+
+	  function animate(){
+	    x = lerp(x, mouseX, 0.18);
+	    y = lerp(y, mouseY, 0.18);
+	    glow.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%) scale(${visible ? 1 : 0.85})`;
+	    requestAnimationFrame(animate);
+	  }
+	  requestAnimationFrame(animate);
+	})();
+	</script>
+</body>
+</html>
+
